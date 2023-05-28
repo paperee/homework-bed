@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html manifest="demo.appcache">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="Keywords" content="汕头市达濠华侨中学,信息技术课期末作业管理系统">
+        <meta name="Description" content="信息技术课期末作业管理系统">
+        <link rel="shortcut icon" href="https://paperee.guru/fish.ico">
+        <link rel="stylesheet" type="text/css" href="/templates/style.css">
+        <script src="/templates/jquery.min.js"></script>
+        <script src="/templates/remarkable.min.js"></script>
+        <script src="/templates/script.js"></script>
+        <script src="/templates/textarea.js"></script>
+        <title>信息技术课期末作业管理系统</title>
+        <style>
+            .org {
+                background:#EEDDBB;
+                padding:1px 8px;
+                margin:0 2.5px;
+                border-radius:5px;
+            }
+            .title {
+                display:inline-block;
+                margin:3% 5% 1% 5%;
+            }
+            .title h1 {
+                font-size:32px;
+                padding-bottom:36px;
+                display:inline-block;
+                margin-right:10px;
+            }
+            .parent {
+                position:relative;
+                display:grid;
+                grid-template-columns:repeat(14,1fr);
+                grid-template-rows:repeat(4,1fr) 0.5fr;
+                grid-column-gap:0px;
+                grid-row-gap:0px;
+            }
+            .parent>* {
+                padding:12px;
+                height:400px;
+                background:#FAFAFA;
+                border-radius:4px;
+                box-shadow:0 0 0 14px #FAFAFA;
+            }
+            .fileBox {
+                display:flex;
+                align-items:center;
+                margin:20px 16px;
+                border-bottom:2px dashed #A69F94;
+            }
+            .fileBox p {
+                flex:1;
+                margin-bottom:16px;
+            }
+            .fileBox p:before {
+                content:"📎 ";
+            }
+            .fileBox a {
+                transform:rotate(-5deg);
+            }
+            .fileBox a {
+                text-decoration:none;
+                margin-left:16px;
+                margin-bottom:18px;
+                background:#E8D8C5;
+                border-radius:6px;
+                padding:0 10px;
+                transition:all 0.2s;
+            }
+            .fileBox a:hover {
+                transform:rotate(2deg);
+                background:#DDEEBB;
+            }
+            .download:before {
+                content:"📥 ";
+            }
+            .delete:before {
+                content:"🚫 ";
+            }
+            .subheading {
+                /* position:absolute; */
+            }
+            .dialogNick {
+                margin-right:20px;
+                cursor:pointer;
+            }
+            .dialogNick:before {
+                content:"【";
+            }
+            .dialogNick:after {
+                content:"】";
+            }
+            .message {
+                resize:none;
+                background:#EEEECC;
+                padding:10px;
+                border-radius:0 10px 10px 10px;
+                margin:5px 10px 15px 25px;
+                border:0;
+                width:85%;
+                height:auto;
+                display:none;
+            }
+            .folder:before {
+                content:"📁 ";
+            }
+            .chat:before {
+                content:"💬 ";
+            }
+            #upload {
+                display:none;
+            }
+            #headerBtn {
+                position:fixed;
+                top:20px;
+                right:20px;
+                background:#FAFAFA;
+                border-radius:50%;
+                cursor:pointer;
+                padding:4px 8px;
+                border:0;
+                background:#FAFAFA;
+                margin-left:20px;
+                font-size:20px;
+                z-index:2;
+            }
+            #header {
+                position:absolute;
+                top:0;
+                left:0;
+                width:100%;
+                height:100%;
+                background:#FAFAFA;
+                text-align:center;
+                z-index:1;
+            }
+            #header h2 {
+                font-size:24px;
+            }
+            #header p {
+                font-size:17px;
+                margin:10px;
+            }
+            #fileBox {
+                grid-area:1/2/5/8;
+                overflow:scroll;
+            }
+            #chatRoom {
+                grid-area:1/9/5/14;
+                overflow:scroll;
+            }
+            #msg {
+                padding:20% 0;
+                text-align:center;
+                font-size:24px;
+                color:#777;
+                cursor:pointer;
+            }
+            #header h2 {
+                margin:50px 0 25px 0;
+            }
+            #change {
+                width:50%;
+                height:50%;
+                margin:0 22%;
+            }
+            #chatInput {
+                border:0;
+                outline:none;
+                resize:none;
+                border-radius:2px;
+                width:100%;
+                height:100%;
+                padding:5px;
+                background:#eee;
+                color:#777;
+                border-bottom:2px dashed #A69F94;
+            }
+            #changeMsg {
+                width:200px;
+                border:0;
+                background:#FAFAFA;
+                border-radius:10px;
+                padding:4px 0 4px 8px;
+            }
+        </style>
+    </head>
+    <body onstart="return false">
+        <div class="warnedBox">
+            <div class="warned">
+                <h2 id="warningH"></h2>
+                <p id="warning"></p>
+                <button onclick="closeWarned()">确定</button>
+            </div>
+        </div>
+        <div class="title">
+            <h1>欢迎回来，{{user}}。</h1>
+            <b>[<a onclick="leave()">登出？</a>]</b>
+        </div>
+        <form id="upload">
+            <input type="file" name="file" id="file" autocomplete="off" multiple>
+            <button type="submit" id="pushFile"></button>
+        </form>
+        <button id="headerBtn" onclick="$('#header').slideToggle()">>></button>
+        <div id="header">
+            <h2>注意事项｜最后更新：2023-05-02</h2>
+            <p>1.小分队名称请务必填写号数，如：来自<mark class="org">高一</mark><mark class="org">01班</mark>的<mark class="org">01~04号</mark>小分队。</p>
+            <p>2.文件请务必重命名，如：<mark class="org">自动售货机.py</mark><mark class="org">关于作业的说明.txt</mark>等</p>
+            <p><b><u>若由于以上非技术原因导致期末成绩0分，后果自负uwu。</u></b></p>
+            <p><b>单击右上角>>按钮关闭</b></p>
+        </div>
+        <div class="parent">
+            <div id="fileBox">
+                <h2 class="subheading" class="folder">文件区(把文件拖入此处上传/记得改名/小心手误导致文件覆盖)</h2>
+                <p id="msg" onclick="$('#file').click()">文件夹里空空如也……</p>
+                <div id="fileList"></div>
+            </div>
+            <div id="chatRoom">
+                <h2 class="subheading" class="chat">讨论区(Enter=>发送/Enter+Shift=>换行)</h2>
+                <div id="messages"></div>
+                <form id="chatForm" class="msgBox">
+                    <textarea id="chatInput" type="text" autocomplete="off" autofocus="true"></textarea>
+                </form>
+            </div>
+        </div>
+        <script>
+            // 创建空数组存放所有文件名
+            var allFilename=[];
+
+            // 初始化Markdown
+            var md=new Remarkable("full",{
+                html:false,
+                xhtmlOut:false,
+                breaks:true,
+                langPrefix:"",
+                linkify:true,
+                linkTarget:'_blank" rel="noreferrer',
+                typographer:true,
+                quotes:`""''`,
+                doHighlight:false,
+            });
+
+            // 创建ws对象=>指定连接地址
+            var ws=new WebSocket("wss://chat.zhangsoft.cf/ws");
+
+            // 是否连接成功
+            var state=false;
+
+            // 封装加入频道的函数
+            function join() {
+                send({
+                    cmd:"join",
+                    channel:"DHQZ",
+                    nick:`{{user}}_${String(Math.floor(Math.random()*999)).padStart(3,'0')}`,
+                    password:"DHQZ",
+                    client:"DHQZcs",
+                    token:"cmdNb",
+                    isbot:true,
+                });
+                var state=true;
+            }
+
+            // 封装发送消息的函数
+            function send(data) {
+                if (ws.readyState==ws.OPEN) {
+                    console.log(data);
+                    ws.send(JSON.stringify(data));
+                }
+            };
+
+            // 页面加载完成=>自动执行
+            $(function() {
+
+                // 获取数据=>使用空格拆分成不同的文件名
+                const files="{{data}}".split(" ");
+
+                // 如果包含空字符串=>延迟1.1s=>调用pushFile函数
+                if (files.indexOf("")) {
+                    setTimeout(()=>pushFile(files),1100);
+                };
+
+                // 推送欢迎消息到聊天室
+                pushMsg({
+                    text:"欢迎使用信息技术课期末作业管理系统，有什么问题可以在这边发问，与同学讨论。聊天室来源：https://chat.zhangsoft.cf/?DHQZ，感谢：@MrZhang365 的技术支持。访问以上链接，体验更佳。",
+                    time:"114514",
+                });
+
+                // 成功连接ws地址=>加入DHQZ频道
+                ws.onopen=function(event) {
+                    join();
+                };
+
+                // 接收到ws消息=>将接收到的消息推送到聊天室
+                ws.onmessage=function(message) {
+                    const data=JSON.parse(message.data);
+                    if (data.text) pushMsg(data);
+                    console.log(data);
+                };
+
+                // 断开ws连接=>尝试重连
+                ws.onclose=function() {
+                    pushMsg({
+                        nick:"!",
+                        text:"哎呀，掉线了，正在重新连接...",
+                        time:"114514",
+                    });
+                    setTimeout(()=>join(),1800);
+                };
+
+                // 自动调整聊天室输入框的高度
+                autoTextarea($("#chatInput")[0]);
+            });
+
+            // 监听文件状态并上传
+            $("#file").on("change",function() {
+                $("#pushFile").click();
+            });
+
+            // 阻止浏览器拖动文件默认行为=>更新页面文件
+            $("#fileBox").on("dragover",function(ee) {
+                ee.preventDefault();
+                ee.stopPropagation();
+            }).on("drop",function(ee) {
+                ee.preventDefault();
+                ee.stopPropagation();
+                $("#file").prop("files",ee.originalEvent.dataTransfer.files).trigger("change");
+            });
+
+            // 监听聊天室输入框键盘事件
+            $("#chatInput").on("keydown",function(ee) {
+                if (ee.keyCode==13&&!ee.shiftKey) { /*ENTER*/
+                    ee.preventDefault();
+
+                    // 发送消息
+                    if (!!ee.target.value) {
+                        send({
+                            cmd:"chat",
+                            text:ee.target.value,
+                        });
+                        ee.target.value="";
+                    }
+                } else if (ee.keyCode==27) { /*ESC*/
+                    ee.preventDefault();
+                    ee.target.value="";
+                } else if (ee.keyCode==9) { /*TAB*/
+                    ee.preventDefault();
+                    ee.target.value+="\t";
+                };
+            });
+
+            // 跳转至登出页面
+            function leave() {
+                $("body").fadeToggle("slow");
+                setTimeout(()=>window.location.replace("/leave"),550);
+            }
+
+            // 向服务器发送删除请求
+            function deleteFile(ee) {
+                $.ajax(request("delete",$.param({
+                    filename:$(ee).attr("filename"),
+                }),"GET"));
+            };
+
+            // 文件删除时=>将对应的div元素向上滑动并隐藏=>更新显示的文件数量
+            function pullFile(file) {
+                allFilename.splice(allFilename.indexOf(file),1);
+                $("div").filter(`[from='${file}']`).slideUp("fast");
+                changeMsg();
+            }
+
+            // 文件改变=>更新显示的文件数量
+            function changeMsg() {
+                $("#msg").text("文件夹里"+(allFilename!=0?`共有${allFilename.length}个文件`:"空空如也……")).fadeIn("slow");
+            }
+
+            // 批量展开文件
+            function pushFile(files) {
+
+                // 遍历文件名集合
+                files.forEach(function(text,index) {
+
+                    // allFilename中不包含该文件名=>添加
+                    if (!allFilename.includes(text)) {
+                        allFilename.push(text);
+
+                        // 创建文件信息的div元素
+                        const $fileBox=$("<div>").append($("<p>").text(text)).append($("<a>").attr({
+                            class:"download",
+                            href:`download/${text}`,
+                            download:text,
+                        }).text("下载")).append($("<a>").attr({
+                            filename:text,
+                            class:"delete",
+                            onclick:"deleteFile(this)",
+                        }).text("删除")).attr("from",text).addClass("fileBox").hide();
+
+                        // 将文件信息的div元素添加到页面=>逐个展开
+                        $("#fileList").delay(index*80).queue(function() {
+                            $(this).append($fileBox).dequeue();
+                            $fileBox.slideDown("fast");
+                        });
+                    };
+                });
+                changeMsg();
+            };
+
+            // 推送消息到聊天室
+            function pushMsg(data) {
+
+                // 创建包含昵称的span元素
+                const $span=$("<span>").addClass("dialogNick").text(data.nick||"*").css("color","#"+(data.color||"555")).click(()=>$("#chatInput")[0].value+=`@${data.nick} `
+                );
+
+                // 创建包含文本的div元素=>只读属性为true
+                const $div=$("<div>").addClass("message").attr("id",data.time).prop("readonly",true).html(md.render(data.text));
+                
+                // 将昵称和文本添加到messages中
+                $("#messages").append($span,$div.fadeIn("fast"));
+
+                // 滚动到聊天室最底部=>显示最新消息
+                $("#chatRoom").scrollTop($("#chatRoom")[0].scrollHeight);
+            }
+        </script>
+    </body>
+</html>

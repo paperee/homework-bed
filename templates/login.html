@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html manifest="demo.appcache">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <meta name="Keywords" content="汕头市达濠华侨中学,信息技术课期末作业管理系统">
+        <meta name="Description" content="信息技术课期末作业管理系统">
+        <link rel="shortcut icon" href="https://paperee.guru/fish.ico">
+        <link rel="stylesheet" type="text/css" href="/templates/style.css">
+        <script src="/templates/jquery.min.js"></script>
+        <script src="/templates/script.js"></script>
+        <title>信息技术课期末作业管理系统</title>
+        <style>
+            ::-webkit-scrollbar {
+                width: 0;
+            }
+            .title {
+                display:inline-block;
+                margin-left:36px;
+            }
+            .title h1 {
+                font-size:36px;
+                padding:36px;
+                display:inline-block;
+            }
+            .uploadForm {
+                text-align:center;
+            }
+            .midFont {
+                font-size:20px;
+            }
+            .menu,.menuTemp {
+                cursor:pointer;
+                width:162px;
+                height:32px;
+                margin:10px;
+            }
+           .menuUl {
+                list-style:none;
+                opacity:0;
+                display:none;
+                width:168px;
+                border:0;
+                border-radius:0 0 10px 10px;
+                background:#FAFAFA;
+                position:absolute;
+                z-index:1;
+                max-height: 32%;
+                overflow: auto;
+            }
+            .menuUl li {
+                text-align:left;
+                padding:4px 0 4px 14px;
+                cursor:pointer;
+            }
+            .menuUl li:hover {
+                background:#DDEEBB;
+            }
+            .menuDiv,input[type="text"] {
+                width:160px;
+                border:0;
+                background:#FAFAFA;
+                border-radius:10px;
+                padding:4px 0 4px 8px;
+            }
+            .this {
+                background:#E8D8C5!important;
+            }
+            .menuInput {
+                border:0;
+                cursor:pointer;
+                background: transparent;
+            }
+            .initial>*{
+                display:inline-block;
+            }
+            #loginPage {
+                padding:10%;
+            }
+            #upload {
+                cursor:pointer;
+                padding:4px 8px;
+                border:0;
+                background:#FAFAFA;
+                border-radius:50%;
+                margin-left:20px;
+                font-size:20px;
+            }
+            #upload:hover {
+                animation:shake 0.7s;
+                animation-iteration-count:infinite;
+            }
+            #school:before {
+                content: "🎓 ";
+            }
+            #pwdSp:before {
+                content: " | ";
+            }
+        </style>
+    </head>
+    <body onstart="return false">
+        <div class="warnedBox">
+            <div class="warned">
+                <h2 id="warningH"></h2>
+                <p id="warning"></p>
+                <button onclick="closeWarned()">确定</button>
+            </div>
+        </div>
+        <div id="loginPage">
+            <div class="title">
+                <h1>注册/登陆</h1>
+                <span id="school"><b>汕头市达濠华侨中学｜信息技术课期末作业管理系统</b></span>
+            </div>
+            <form class="uploadForm" id="login">
+                <div class="initial">
+                    <span class="midFont">来自</span>
+                    <div class="menu">
+                        <div class="menuDiv">
+                            <input readonly name="group" class="menuInput" autocomplete="off" placeholder="请选择">
+                        </div>
+                        <ul class="menuUl">
+                            <li>高一</li>
+                            <li>高二</li>
+                            <li>高三</li>
+                        </ul>
+                    </div>
+                    <div class="menu">
+                        <div class="menuDiv">
+                            <input readonly name="class" class="menuInput" autocomplete="off" placeholder="请选择">
+                        </div>
+                        <ul class="menuUl">
+                            <li>01班</li>
+                            <li>02班</li>
+                            <li>03班</li>
+                            <li>04班</li>
+                            <li>05班</li>
+                            <li>06班</li>
+                            <li>07班</li>
+                            <li>08班</li>
+                            <li>09班</li>
+                            <li>10班</li>
+                            <li>11班</li>
+                            <li>12班</li>
+                            <li>13班</li>
+                            <li>14班</li>
+                            <li>15班</li>
+                            <li>16班</li>
+                            <li>17班</li>
+                            <li>18班</li>
+                            <li>19班</li>
+                            <li>20班</li>
+                            <li>21班</li>
+                            <li>22班</li>
+                        </ul>
+                    </div>
+                    <span class="midFont">的</span>
+                    <div class="menu">
+                        <div class="menuDiv">
+                            <input readonly name="team" class="menuInput" autocomplete="off" placeholder="请选择">
+                        </div>
+                        <ul class="menuUl">
+                            <li>01组</li>
+                            <li>02组</li>
+                            <li>03组</li>
+                            <li>04组</li>
+                            <li>05组</li>
+                            <li>06组</li>
+                            <li>07组</li>
+                            <li>08组</li>
+                            <li>09组</li>
+                            <li>10组</li>
+                            <li>11组</li>
+                            <li>12组</li>
+                            <li>13组</li>
+                            <li>14组</li>
+                            <li>15组</li>
+                        </ul>
+                    </div>
+                    <span class="midFont">小分队</span>
+                    <span class="midFont" id="pwdSp">密码</span>
+                    <div class="menuTemp">
+                        <input type="text" id="pwd" name="pwd" maxlength="6" autocomplete="off" placeholder="首次登陆自动创建">
+                    </div>
+                    <button id="upload" type="submit">OK</button>
+                </div>
+            </form>
+        </div>
+        <script>
+            // 定义checkMenu函数=>控制下拉菜单的显示或隐藏
+            function checkMenu(index) {
+                const $menuInput=$(".menuInput").eq(index);
+                const $menuDiv=$(".menuDiv").eq(index);
+                const $menuUl=$(".menuUl").eq(index);
+                const $menuThis=$menuUl.find("li").eq(0);
+
+                $menuDiv.on("click",function(e) {
+                    e.stopPropagation();
+
+                    if ($menuUl.css("display")==="block") {
+                        $menuDiv.find("i").removeClass("menu-i");
+                        $menuUl.hide().animate({
+                            marginTop:"50px",
+                            opacity:"0"
+                        },"fast");
+                        $menuDiv.css({
+                            borderRadius:"10px",
+                        });
+                    } else {
+                        $menuDiv.find("i").addClass("menu-i");
+                        $menuUl.show().animate({
+                            marginTop:"5px",
+                            opacity:"1"
+                        },"fast");
+                        $menuDiv.css({
+                            borderRadius:"10px 10px 0 0",
+                        });
+                    };
+                });
+                
+                // 将被选中的li元素内容填充到input元素中=>修改背景颜色
+                $menuUl.on("click","li",function() {
+                    $menuInput.val($(this).html());
+                    $menuDiv.click();
+
+                    // 改变选中的元素
+                    $(this).siblings(".this").removeClass("this");
+                    $(this).addClass("this");
+                });
+            };
+
+            // 遍历每个下拉菜单=>调用checkMenu函数
+            $(".menu").each((index)=>{
+                checkMenu(index);
+            });
+        </script>
+    </body>
+</html>
